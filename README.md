@@ -1,4 +1,4 @@
-# Ragul Prasath V – Portfolio Documentation
+# Ragul Prasath V – Portfolio 
 
 ## 1. Overview
 A single-file portfolio website (`index.html`, about 42 KB) for Ragul Prasath V, Data Scientist, AI/ML and Quantitative Analyst. No build step, no framework, no tracking. Your photo is embedded inside the file, so it works anywhere.
