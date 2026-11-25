@@ -1,21 +1,8 @@
-
-// ==========================================
-// 1. GET HTML ELEMENTS
-// ==========================================
-
 const canvas = document.getElementById("g");
 const ctx = canvas.getContext("2d");
 
 const output = document.getElementById("out");
 const routeText = document.getElementById("route");
-
-
-// ==========================================
-// 2. CREATE NETWORK NODES
-// ==========================================
-
-// Each node has an X and Y position.
-// Values between 0 and 1 represent relative positions.
 
 const nodes = [
     [0.08, 0.2],
@@ -38,20 +25,10 @@ const nodes = [
 // Labels for nodes
 
 const labels = "ABCDEFGHIJKLMN";
-
-
-// ==========================================
-// 3. CREATE CONNECTIONS
-// ==========================================
-
 const edges = [];
 
 // Adjacency list
 const adjacencyList = nodes.map(() => []);
-
-
-// Calculate distance between two nodes
-
 for (let i = 0; i < nodes.length; i++) {
 
     for (let j = i + 1; j < nodes.length; j++) {
@@ -84,12 +61,6 @@ for (let i = 0; i < nodes.length; i++) {
     }
 
 }
-
-
-// ==========================================
-// 4. VARIABLES FOR ROUTING
-// ==========================================
-
 let targetNode = 13;
 
 let shortestPath = [];
@@ -101,9 +72,6 @@ let progress = 1;
 let canvasWidth;
 let canvasHeight;
 
-
-// Get CSS color variables
-
 function getCSSVariable(name) {
 
     return getComputedStyle(document.documentElement)
@@ -112,17 +80,8 @@ function getCSSVariable(name) {
 
 }
 
-
-// Check whether reduced motion is enabled
-
 const reducedMotion =
     matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-
-// ==========================================
-// 5. DIJKSTRA'S SHORTEST PATH ALGORITHM
-// ==========================================
-
 function findShortestPath(target) {
 
     // Distance from starting node to every node
@@ -133,19 +92,12 @@ function findShortestPath(target) {
 
     // Track visited nodes
     const visited = nodes.map(() => false);
-
-
     // Starting node is A (index 0)
     distances[0] = 0;
-
-
     // Process all nodes
     for (let count = 0; count < nodes.length; count++) {
 
         let currentNode = -1;
-
-
-        // Find the unvisited node with the smallest distance
 
         for (let i = 0; i < nodes.length; i++) {
 
@@ -174,15 +126,7 @@ function findShortestPath(target) {
             break;
 
         }
-
-
-        // Mark node as visited
-
         visited[currentNode] = true;
-
-
-        // Check all neighboring nodes
-
         adjacencyList[currentNode].forEach(function (connection) {
 
             const neighbor = connection[0];
@@ -190,9 +134,6 @@ function findShortestPath(target) {
 
             const newDistance =
                 distances[currentNode] + weight;
-
-
-            // Update distance if a shorter path is found
 
             if (newDistance < distances[neighbor]) {
 
@@ -206,17 +147,9 @@ function findShortestPath(target) {
 
     }
 
-
-    // ==========================================
-    // RECONSTRUCT THE PATH
-    // ==========================================
-
     const path = [];
 
     let current = target;
-
-
-    // Work backwards from destination to starting node
 
     while (current !== -1) {
 
@@ -225,35 +158,18 @@ function findShortestPath(target) {
         current = previous[current];
 
     }
-
-
-    // Return path and total cost
-
     return [path, distances[target]];
 
 }
-
-
-// ==========================================
-// 6. SELECT A DESTINATION NODE
-// ==========================================
-
 function selectNode(nodeIndex) {
 
     targetNode = nodeIndex;
-
-
-    // Find shortest path
 
     const result = findShortestPath(nodeIndex);
 
     shortestPath = result[0];
 
     shortestPathCost = result[1];
-
-
-    // Display route cost
-
     if (shortestPathCost === Infinity) {
 
         output.textContent = "No route";
@@ -266,30 +182,18 @@ function selectNode(nodeIndex) {
         output.textContent = shortestPathCost;
 
 
-        // Convert node numbers into letters
-
         const route = shortestPath.map(function (node) {
 
             return labels[node];
 
         });
 
-
-        // Display route
-
         routeText.textContent =
             "Route: " + route.join(" → ");
 
     }
 
-
-    // Reset animation
-
     progress = reducedMotion ? 1 : 0;
-
-
-    // Start animation
-
     if (!reducedMotion) {
 
         requestAnimationFrame(animateRoute);
@@ -297,11 +201,6 @@ function selectNode(nodeIndex) {
     }
 
 }
-
-
-// ==========================================
-// 7. RESIZE CANVAS
-// ==========================================
 
 function resizeCanvas() {
 
@@ -314,16 +213,9 @@ function resizeCanvas() {
 
     canvasHeight = rectangle.height;
 
-
-    // Adjust canvas resolution
-
     canvas.width = canvasWidth * pixelRatio;
 
     canvas.height = canvasHeight * pixelRatio;
-
-
-    // Scale drawing for high-resolution screens
-
     ctx.setTransform(
         pixelRatio,
         0,
@@ -340,11 +232,6 @@ function resizeCanvas() {
 
 }
 
-
-// ==========================================
-// 8. GET NODE POSITION
-// ==========================================
-
 function getNodePosition(index) {
 
     const node = nodes[index];
@@ -360,11 +247,6 @@ function getNodePosition(index) {
     return [x, y];
 
 }
-
-
-// ==========================================
-// 9. DRAW NETWORK GRAPH
-// ==========================================
 
 function drawGraph() {
 
@@ -390,11 +272,6 @@ function drawGraph() {
 
     const panelColor = getCSSVariable("--panel");
 
-
-    // ==========================================
-    // DRAW CONNECTION LINES
-    // ==========================================
-
     edges.forEach(function (edge) {
 
         const start = getNodePosition(edge[0]);
@@ -416,12 +293,6 @@ function drawGraph() {
         ctx.stroke();
 
     });
-
-
-    // ==========================================
-    // DRAW SHORTEST PATH
-    // ==========================================
-
     const numberOfSegments =
         shortestPath.length - 1;
 
@@ -435,9 +306,6 @@ function drawGraph() {
     ctx.strokeStyle = accentColor;
 
     ctx.lineCap = "round";
-
-
-    // Draw path gradually
 
     for (let i = 0; i < numberOfSegments; i++) {
 
@@ -479,11 +347,6 @@ function drawGraph() {
         ctx.stroke();
 
     }
-
-
-    // ==========================================
-    // DRAW NODES
-    // ==========================================
 
     ctx.font = '500 13px "IBM Plex Sans", sans-serif';
 
@@ -599,11 +462,6 @@ function drawGraph() {
 
 }
 
-
-// ==========================================
-// 10. ANIMATE ROUTE
-// ==========================================
-
 function animateRoute() {
 
     // Increase animation progress
@@ -628,11 +486,6 @@ function animateRoute() {
     }
 
 }
-
-
-// ==========================================
-// 11. HANDLE CANVAS CLICK
-// ==========================================
 
 canvas.addEventListener("click", function (event) {
 
@@ -692,17 +545,8 @@ canvas.addEventListener("click", function (event) {
 
 });
 
-
-// ==========================================
-// 12. HANDLE WINDOW RESIZE
-// ==========================================
-
 window.addEventListener("resize", resizeCanvas);
 
-
-// ==========================================
-// 13. HANDLE DARK MODE CHANGES
-// ==========================================
 
 const darkMode = matchMedia(
     "(prefers-color-scheme: dark)"
@@ -717,13 +561,6 @@ if (darkMode.addEventListener) {
     );
 
 }
-
-
-// ==========================================
-// 14. INITIALIZE GRAPH
-// ==========================================
-
-// Set canvas size
 
 resizeCanvas();
 
